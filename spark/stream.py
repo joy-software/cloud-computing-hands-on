@@ -5,7 +5,7 @@ from pyspark.streaming import StreamingContext
 from utils import *
 
 sc = SparkContext('local', 'test')
-# sc.setLogLevel("ERROR")
+sc.setLogLevel("ERROR")
 sc.setCheckpointDir("/tmp") # for stable state        
 ssc = StreamingContext(sc,1)
 
@@ -30,7 +30,7 @@ dstream\
   .foreachRDD(lambda rdd: update_result(rdd))
 
 ssc.start()
-ssc.awaitTerminationOrTimeout()
+ssc.awaitTerminationOrTimeout(30)
 ssc.stop()
 
 for (k,v) in result:
