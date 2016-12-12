@@ -20,11 +20,15 @@ def topK(rdd,k):
     return rdd.reduceByKey(add).top(k,key=lambda item: item[1] )
 
 
-# streaming operators
+# streaming operator
 
 def sclean(dstream):
     return clean(dstream)
 
-def scount(dstream):
-    
-    return dstream
+def updateFunction(newValues, runningCount):
+    if runningCount is None:
+       runningCount = 0
+    return sum(newValues, runningCount)  # add the new values with the previous running count to get the new count
+
+def scount(dstream):    
+    return dstream.updateStateByKey(updateFunction)
