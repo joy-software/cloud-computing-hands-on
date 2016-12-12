@@ -18,9 +18,10 @@ for filename in os.listdir("data/split"):
 result = []
 def update_result(rdd):
     global result
+    print result
     result = rdd.top(10)
 
-# processing
+ # processing
 dstream = ssc.queueStream(rddQ)
 dstream = sclean(dstream)
 dstream = scount(dstream)
@@ -29,7 +30,7 @@ dstream\
   .foreachRDD(lambda rdd: update_result(rdd))
 
 ssc.start()
-ssc.awaitTerminationOrTimeout(30)
+ssc.awaitTerminationOrTimeout()
 ssc.stop()
 
 for (k,v) in result:
