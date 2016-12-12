@@ -2,7 +2,7 @@ from pyspark import SparkContext
 from utils import *
 
 sc = SparkContext('local', 'test')
-# sc.setLogLevel("ERROR")
+sc.setLogLevel("ERROR")
 
 rdd=sc.textFile("data/split/aa")
 rdd=clean(rdd)
