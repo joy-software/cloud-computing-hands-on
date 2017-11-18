@@ -1,14 +1,5 @@
 # A distributed sum computation atop Infinispan.
 
-<!-- TODO:
-in the last question, ask to execute at least 1000 rounds with (around) 3 nodes using updates between [0,1], not stricly growing otherwise the approache makes few sense;
-give a real scenario, e.g., a monte-carlo;
-ask a plot over time(?);
-update the correction with a proper unit test for the last question.
-in the last question, as by construction l<s<L, we simply have to test that this is also true for the master.
-how to deal with a constraint violation occuring in the middle of another one?
-!-->	
-
 In this lab session, we consider a distributed set of nodes, each receiving a stream of integers.
 Our end goal is to approximate the global sum of these integers using Infinispan.
 
