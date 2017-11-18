@@ -21,18 +21,13 @@ public class Message implements Serializable {
    private UUID id;
 
    public Message(String from, MessageType type){
-      this(from, type, null, UUID.randomUUID());
+      this(from, type, UUID.randomUUID());
    }
 
    public Message(String from, MessageType type,Serializable body){
-      this(from, type,body,UUID.randomUUID());
-   }
-
-   public Message(String from, MessageType type,Serializable body, UUID id){
       this.from = from;
       this.type = type;
       this.body = body;
-      this.id = id;
    }
 
    // getters/setters
@@ -59,11 +54,6 @@ public class Message implements Serializable {
 
    public void setFrom(String from) {
       this.from = from;
-   }
-
-   @Override
-   public String toString(){
-     return "["+from+","+id+","+body+","+type+"]";
    }
 
 }

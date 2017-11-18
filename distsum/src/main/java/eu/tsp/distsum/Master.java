@@ -101,7 +101,12 @@ public class Master extends Node{
     * Send constraints back to the workers
     */
    private void sendConstraints() {
-     // TODO
+      // send the new constraint
+      for (Map.Entry<String, Constraint> entry : constraintMap.entrySet()) {
+         channel.send(
+                 entry.getKey(),
+                 new Message(MASTER, Message.MessageType.CONSTRAINT, entry.getValue()));
+      }
    }
 
 }

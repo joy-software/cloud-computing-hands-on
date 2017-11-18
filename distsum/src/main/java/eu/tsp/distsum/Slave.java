@@ -20,14 +20,16 @@ public class Slave extends Node {
 
         Message reply = new Message(id, Message.MessageType.REPLY);
 
-        // If the message is a get, then set the local sum as the body of the reply
+        // If the message is a get then set the local sum as the body of the reply
         if(msg.getType().equals(Message.MessageType.GET)){
             reply.setBody(localValue);
             channel.send(Master.MASTER,reply);
         }
 
-        // if the message is a new constraint, update the local constraint accordingly
-	// TODO
+        // if the message is a new constraint update local constraint accordingly
+        if (msg.getType().equals(Message.MessageType.CONSTRAINT)){
+            this.constraint = (Constraint) msg.getBody();
+        }
     }
 
     // a new message is received in the stream

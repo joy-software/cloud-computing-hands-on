@@ -8,7 +8,7 @@ import org.infinispan.Cache;
  * where each entry is dedicated to a particular node.
  *
  * Sending a message m to a node N consists in executing
- * an asynchronous put(N,m) operation on the channel.
+ * a put(N,m) operation on the channel.
  *
  */
 public class Channel {
@@ -34,14 +34,18 @@ public class Channel {
     * Send a message to node id.
     */
    public void send(String id, Message message){
-      // TODO
+      nodes.putAsync(id, message);
    }
 
    /*
     * Broadcast a message to all the nodes, but the master.
     */
    public void broadcast(Message message){
-      // TODO
+      for (String node: nodes.keySet()) {
+         if (!node.equals(Master.MASTER)) {
+            send(node,message);
+         }
+      }
    }
 
 }
