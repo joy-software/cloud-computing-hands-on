@@ -1,5 +1,14 @@
 # A distributed sum computation atop Infinispan.
 
+<!-- TODO:
+in the last question, ask to execute at least 1000 rounds with (around) 3 nodes using updates between [0,1], not stricly growing otherwise the approache makes few sense;
+give a real scenario, e.g., a monte-carlo;
+ask a plot over time(?);
+update the correction with a proper unit test for the last question.
+in the last question, as by construction l<s<L, we simply have to test that this is also true for the master.
+how to deal with a constraint violation occuring in the middle of another one?
+!-->	
+
 In this lab session, we consider a distributed set of nodes, each receiving a stream of integers.
 Our end goal is to approximate the global sum of these integers using Infinispan.
 
@@ -14,7 +23,7 @@ The ability to timely detect trends and/or popularity variations is of key inter
 In this hands-on, we consider a group of nodes that each monitor a stream of integers.
 Our objective is to *approximate* the total sum of these integers over time.
 
-In formal terms, let us denote *Time* the interval of time, and *Nodes* the set of nodes.
+In formal terms, let us denote *Time* the interval of time and *Nodes* the set of nodes.
 Then, we define *stream(t,N)* the value at time *t* of the stream at node *N*.
 We aim at approximating the integral of *stream(t,N)* over both *Time* and *Nodes*
 
@@ -22,8 +31,8 @@ We aim at approximating the integral of *stream(t,N)* over both *Time* and *Node
 
 To construct the approximation, we use a master-slave distributed architecture on top of Infinispan.
 More precisely, we consider a particular node among the group of nodes.
-This nodes acts as the *master* node and it coordinates the process of computing the global sum.
-The other nodes are *slaves*, and each receives a stream of integers.
+This node acts as the *master* node and it coordinates the process of computing the global sum.
+The other nodes are *slaves* and each receives a stream of integers.
 
 Each slave listens to its stream of integers, and maintains a *local sum*.
 A slave node also maintains a [Constraint](src/main/java/eu/tsp/distsum/Constraint.java) object.
@@ -32,7 +41,7 @@ This constrains consists of an *upper* and a *lower* bound.
 The master maintains the approximation of the *global sum*.
 When at some slave node, an update makes the local sum violates the constraint, i.e., the local sum is outside of the bounds, the slave informs the master.
 The master then asks all the slaves to send their local value of the sum.
-The coordinator recomputes the global sum and updates the constraints at the slave nodes.
+Then, the coordinator recomputes the global sum and updates the constraints at the slave nodes.
 
 **[Task]** For some node *N*, let us note respectively *l(t,N)* and *L(t,N)* the lower bound and upper bound at node *N*.
 If there is no constraint violation at time *t*, define the interval where lies the approximation of the master node ? 
@@ -51,15 +60,15 @@ This tutorial covers the basics of Maven you need to know to successfully do thi
 
 The [Master](src/main/java/eu/tsp/distsum/Master.java) and [Slave](src/main/java/eu/tsp/distsum/Slave.java) classes model respectively the master and the slave nodes.
 Both classes inherit from the [Node](src/main/java/eu/tsp/distsum/Node.java) class.
-At core this class is a listener which receives messages from other nodes as cache notifications.
+The Node class is a listener that receives messages from other nodes as cache notifications.
 
 **[Task]** Create a `SimpleNode` class that sub-classes the `Node` class.
-This class should simply print the message it receives by overriding the method `receiveMessage(Message msg)`.
+This class should print the message it receives by overriding the method `receiveMessage(Message msg)`.
 
 Nodes communicate using the [Channel](src/main/java/eu/tsp/distsum/Channel.java) class, which contains a `Cache` field. 
 When a node *N* registers to an instance of a `Channel` object, it sets-up a listener together with a `NodeFilter`.
 By default, a listener triggers upon all the updates in the `Cache`.
-The filter ensures that solely updates regarding node *N* trigger at the listener.
+The NodeFilter instance ensures that solely updates regarding node *N* trigger at the listener.
 The [NodeFilterFactory](src/main/java/eu/tsp/distsum/NodeFilterFactory.java) implements a factory of filters.
 When provided with some node identifier, it construct a `NodeFilter` for that node.
 
@@ -76,7 +85,7 @@ We advise you hereafter to set `NUMBER_SLAVES` not too far from the total number
 
 **[Task]** Complete the `baseCommunicationTest` method in `DistributedSum` to test that your implementation of `Channel` is correct.
 For instance, you may create `NUMBER_SLAVES` instances of the `SimpleNode` class and make them communicate together by sending empty messages.
-You may match a node to a cache manager by using the method `manager(int i)` of `DistributedSum`.
+You can associate a node to a cache manager by using the method `manager(int i)` in `DistributedSum`.
 
 ## 5. Going further 
 
@@ -91,6 +100,6 @@ To this end, you may proceed as follows:
 
 3. Define some initial constraints at the slave nodes.
 Then, execute `NUMBER_ROUNDS` rounds of computation.
-At each such round,  inject a new update in the slave nodes.
+In each such round,  inject a new update in the slave nodes.
 Check that the master holds a correct approximation of the global sum.
 If this approximation is incorrect at some round, raise an exception.
